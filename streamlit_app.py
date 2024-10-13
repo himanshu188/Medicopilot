@@ -11,7 +11,7 @@ def beautify_response(response_data):
 st.title(":robot_face: Medicopilot")
 file = st.file_uploader("Choose a file to index...", type=["docx", "pdf", "txt"])
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["Agent1", "Agent2", "Agent3"])
+tab1, tab2, tab3, tab4 = st.tabs(["Retriever", "PubSub", "Internet Search", "Mult-Agent"])
 
 
 def create_agent_tab(agent_name, api_endpoint):
@@ -20,15 +20,17 @@ def create_agent_tab(agent_name, api_endpoint):
         # Create a placeholder for the submit button and response
         submit_button_placeholder = st.empty()
         response_placeholder = st.empty()
-        submit_button = st.button(f"Submit to {agent_name}", key=f"submit_{agent_name}")
+        submit_button = st.button(f"Submit", key=f"submit_{agent_name}")
         if submit_button:
             # if file is not None:
-            url = "http://localhost:8000/agent1"
+            url = f"http://localhost:8000/{api_endpoint}"
             # files = {"file": (file.name, file.getvalue(), file.type)}
 
             submit_button_placeholder.empty()
             progress_bar = st.progress(0)
             status_text = st.empty()
+            message_placeholder = st.empty()
+            message_placeholder.success("File submitted successfully!")
             try:
                 # response = requests.post(url, files=files)
                 for i in range(100):
@@ -38,8 +40,10 @@ def create_agent_tab(agent_name, api_endpoint):
 
                 response = requests.get(url)
                 if response.status_code == 200:
-                    st.success("File submitted successfully!")
-                    st.write("Response from server:")
+                    status_text.empty()
+                    progress_bar.empty()
+                    message_placeholder.empty()
+                    # st.write("Response from server:")
                     # Parse the JSON response
                     response_data = response.json()
 
@@ -55,14 +59,13 @@ def create_agent_tab(agent_name, api_endpoint):
         #     st.warning("Please upload a file before submitting.")
 
 with tab1:
-    create_agent_tab("Agent1", "/agent1")
+    create_agent_tab("Retriever", "/agent1")
 
 with tab2:
-    create_agent_tab("Agent2", "/agent2")
+    create_agent_tab("PubSub", "/agent2")
 
 with tab3:
-    create_agent_tab("Agent3", "/agent3")
+    create_agent_tab("Internet Search", "/agent3")
 
-# output_container = st.empty()
-# answer_container = output_container.chat_message("assistant", avatar="🦜")
-# answer_container.write('test')
+with tab4:
+    create_agent_tab("Multi-agent", "/multiagent")
